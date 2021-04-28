@@ -1,0 +1,69 @@
+@App:name("HelloKafka")
+
+@App:description('Consume events from a Kafka Topic and publish to a different Kafka Topic')
+
+/*
+
+Purpose:
+    This application demonstrates how to use the Kafka transport in Siddhi to receive and publish events. Events which are in JSON format are consumed from one Kafka topic and written to another Kafka topic in XML format.
+
+Executing the Sample:
+    1) Start the Siddhi application by clicking on 'Run'
+    2) If the Siddhi application starts successfully, the following messages would be shown on the console,
+        * HelloKafka.siddhi - Started Successfully!
+*/
+
+/*
+SweetProductionStream definition. It receives events from "kafka_topic" in json format. Events in this stream will
+have information about the name of the sweet and how much of it is produced.
+*/
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='json'))
+define stream SweetProductionStream (name string, amount double);
+
+/*
+Suppose that the factory packs sweets by taking last 3 sweet productions disregarding their individual amount.
+TotalStream will have total of the last 3 events in SweetProductionStream. This is calcuklated as follows; the sum of
+1st, 2nd, and 3rd events of SweetProductionStream will be the 1st event of TotalStream and the sum of 4th, 5th, and
+6th events of SweetProductionStream will be the 2nd event of TotalStream
+*/
+define stream TotalStream (total double);
+
+/*
+This stream counts the event number of TotalStream and sends that count along with total. This will help us find out
+the batch which has a low total weight by using the count as batch number as we will see in the LowProductionAlertStream
+*/
+define stream TotalStreamWithBatch(batchNumber long, total double);
+
+/*
+This stream will send an alert into kafka_result_topic if any batch has a total weight less than 10. Batch number of
+the low weight batch and the actual weight will be sent out.
+*/
+@sink(type='kafka',
+      topic='consume',
+      bootstrap.servers='kafka:9092',
+      partition.no.list='0',
+      @map(type='xml'))
+define stream LowProductionAlertStream (batchNumber long, lowTotal double);
+
+
+--summing events in SweetProductionStream in batches of 3 and sending to TotalStream
+@info(name='query1')
+from SweetProductionStream#window.lengthBatch(3)
+select sum(amount) as total
+insert into TotalStream;
+
+--count is included to indicate batch number
+from TotalStream
+select count() as batchNumber, total
+insert into TotalStreamWithBatch;
+
+--filtering out events with total less than 10 to create alert
+from TotalStreamWithBatch[total < 10]
+select batchNumber, total as lowTotal
+insert into LowProductionAlertStream;

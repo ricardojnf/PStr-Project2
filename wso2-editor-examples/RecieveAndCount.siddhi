@@ -1,0 +1,22 @@
+@App:name("ReceiveAndCount")
+
+@App:description('Receive events via Kafka and view the output on the console')
+
+
+@source(type='kafka',
+        topic.list='consume',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='xml'))
+define stream LowProductionAlertStream (batchNumber long, lowTotal double);
+
+@sink(type='log')
+define stream TotalCountStream (totalCount long);
+
+-- Count the incoming events
+@info(name='query1')
+from LowProductionAlertStream
+select count() as totalCount
+insert into TotalCountStream;

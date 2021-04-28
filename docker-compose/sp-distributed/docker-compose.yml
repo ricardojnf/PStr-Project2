@@ -33,6 +33,7 @@ services:
         KAFKA_ADVERTISED_PORT: 9092
         KAFKA_ADVERTISED_HOST_NAME: kafka
         KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_CREATE_TOPICS: "productions:1:1:compact"
   mysql:
     image: mysql:5.7.19
     container_name: sp-rdbms
@@ -125,3 +126,14 @@ services:
     environment:
       NODE_ID: wso2sp-worker-2
       NODE_IP: 0.0.0.0
+  editor:
+    image: wso2/wso2sp-editor:4.4.0
+    container_name: wso2sp-editor
+    ports:
+      - "9743:9743"
+      - "9390:9390"
+    healthcheck:
+      test: ["CMD", "nc", "-z","localhost", "9743"]
+      interval: 10s
+      timeout: 120s
+      retries: 5
