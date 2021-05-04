@@ -1,0 +1,67 @@
+version: '2.3'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+      - "2888:2888"
+      - "3888:3888"
+    healthcheck:
+      test: ["CMD", "nc", "-z","localhost", "2181"]
+      interval: 10s
+      timeout: 120s
+      retries: 5
+    environment:
+        ZOO_PORT: 2181
+        ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT: 10
+        ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL: 2
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    healthcheck:
+      test: ["CMD", "nc", "-z","localhost", "9092"]
+      interval: 10s
+      timeout: 120s
+      retries: 5
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    environment:
+        KAFKA_ADVERTISED_PORT: 9092
+        KAFKA_ADVERTISED_HOST_NAME: kafka
+        KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+        KAFKA_CREATE_TOPICS: "productions:1:1,Topic2:1:1,Topic3:1:1,Topic4:1:1"
+    volumes:
+      - ./kafka-data:/usr/bin/kafka-data
+  mysql:
+    image: mysql:5.7.19
+    container_name: sp-rdbms
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - ./mysql/scripts:/docker-entrypoint-initdb.d
+    command: --max-connections=10000
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-proot"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    depends_on:
+      kafka:
+        condition: service_healthy
+  editor:
+    image: wso2/wso2sp-editor:4.4.0
+    container_name: wso2sp-editor
+    ports:
+      - "9743:9743"
+      - "9390:9390"
+    healthcheck:
+      test: ["CMD", "nc", "-z","localhost", "9743"]
+      interval: 10s
+      timeout: 120s
+      retries: 5

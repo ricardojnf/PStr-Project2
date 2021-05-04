@@ -4,19 +4,19 @@
 
 
 @source(type='kafka',
-        topic.list='consume',
+        topic.list='productions',
         partition.no.list='0',
         threading.option='single.thread',
         group.id="group",
         bootstrap.servers='kafka:9092',
-        @map(type='xml'))
-define stream LowProductionAlertStream (batchNumber long, lowTotal double);
+        @map(type='json'))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs string,trip_distance string,pickup_longitude string,pickup_latitude string,dropoff_longitude string,dropoff_latitude string,payment_type string,fare_amount string,surcharge string,mta_tax string,tip_amount string,tolls_amount string,total_amount string);
 
 @sink(type='log')
 define stream TotalCountStream (totalCount long);
-
+ 
 -- Count the incoming events
 @info(name='query1')
-from LowProductionAlertStream
+from RawInputStream
 select count() as totalCount
 insert into TotalCountStream;
