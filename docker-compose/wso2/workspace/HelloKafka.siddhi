@@ -44,11 +44,7 @@ define stream TotalStreamWithBatch(batchNumber long, total double);
 This stream will send an alert into kafka_result_topic if any batch has a total weight less than 10. Batch number of
 the low weight batch and the actual weight will be sent out.
 */
-@sink(type='kafka',
-      topic='consume',
-      bootstrap.servers='kafka:9092',
-      partition.no.list='0',
-      @map(type='xml'))
+@sink(type='log', prefix='Low Alert:')
 define stream LowProductionAlertStream (batchNumber long, lowTotal double);
 
 
@@ -67,3 +63,4 @@ insert into TotalStreamWithBatch;
 from TotalStreamWithBatch[total < 10]
 select batchNumber, total as lowTotal
 insert into LowProductionAlertStream;
+ 

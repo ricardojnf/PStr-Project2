@@ -10,6 +10,7 @@
 2. cd .\docker-sp\docker-compose\
 3. docker-compose up
 4. Wait for docker-compose to launch all the containers. Check with docker UI.
+    * ![docker](./images/docker-healthy.png)
 4. Open the wso2sp editor: http://localhost:9390/editor
 5. Your working enviroments should be fully setup at this point. Any changes on the docker compose would have to be restarted.
 
@@ -43,11 +44,23 @@ You can delete the 'dbdata' folder on 'docker-compose/dbdata', this will delete 
 
 # Useful tutorials:
 * Get used to the editor: https://docs.wso2.com/display/SP440/Creating+a+Simple+Siddhi+Application
-* (http communication may fail) Consuming events from external source: https://docs.wso2.com/display/SP440/Consuming+Events
+* Consuming events from external source: https://docs.wso2.com/display/SP440/Consuming+Events
 * Pre-process data: https://docs.wso2.com/display/SP440/Pre-processing+Streaming+Data
 * Database integration: https://docs.wso2.com/display/SP440/Integrating+Datastores
 
-# Publishing Taxi data to a kafka topic from the CSV:
+# Kafka integration
+## Testing kafka
+You may want to test the kafka connection by using the provided HelloKafka.siddhi example.
+ 1. Open and read the HelloKafka.siddhi example on wso2 editor
+ 2. Run HelloKafka.siddhi
+ 3. Open kafka CLI console in Docker or use "docker exec -it kafka /bin/bash"
+    * ![CLI](./images/kafka-cli.png)
+ 4. Inside the kafka cli: cd usr/bin
+ 5. Inside the kafka cli: kafka-console-producer.sh --broker-list kafka:9092 --topic productions
+
+This will open an interactive kafka producer interface, publish events of the type: `{"name": "Jaffa Cake","amount": 2.0}`. Change the parameters around to make sure everything is working correcly. Effects of this will be seen on the wso2 editor console. Note that the alerts will only be sent for production batches with less than 10 amount. 
+
+## Publishing Taxi data to a kafka topic from the CSV:
 This section covers how to publish the CSV Taxi data to a kafka topic, which will be used to test and develop your work.
 1. Make sure to put the csv files (found on the GDrive) under docker-compose/kafka-data/
     * ![kafkadata](./images/kafka-csv.png)
@@ -67,7 +80,7 @@ This section covers how to publish the CSV Taxi data to a kafka topic, which wil
 * See group ids: kafka-consumer-groups.sh --bootstrap-server kafka:9092 --list
 * See kafka topics: kafka-topics.sh --list --bootstrap-server localhost:2181
 
-* Interactive CLI record publisher:  kafka-console-producer.sh --broker-list kafka:9092 --topic productions
+* Interactive CLI record publisher: kafka-console-producer.sh --broker-list kafka:9092 --topic productions
 
 * Read kafka topics: kafka-console-consumer.sh --topic consume --from-beginning --bootstrap-server kafka:9092
 
@@ -82,5 +95,19 @@ Make sure to use 'kafka' as the url identifier and not 'localhost' or an IP. ex 
 <summary>Containers can not see eachother</summary>
 Containers are connected though the docker-compose default network. Use the address with the containter name instead of an IP address. ex: 'jdbc:mysql://sp-rdbms:3306'
 </details>
+
+
+<details>
+<summary>Stream sink does not recieve http requests</summary>
+Make sure to setup the source url as '0.0.0.0' instead of 'localhost'.
+</details>
+
+<details>
+<summary>Connection to mysql strore fails</summary>
+Make sure your store settigns are setup with the following attributes, address by name, useSSL=false, and correct password and user.
+<code>@store(type='rdbms', jdbc.url="jdbc:mysql://sp-rdbms:3306/SweetFactoryDB?useSSL=false", username="wso2carbon", password="wso2carbon" , jdbc.driver.name="com.mysql.jdbc.Driver")</code>
+</details>
+
+
 
 

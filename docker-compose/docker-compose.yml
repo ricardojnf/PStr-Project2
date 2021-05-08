@@ -64,6 +64,8 @@ services:
         source: ./wso2/conf/deployment.yaml
         target: /home/wso2carbon/wso2sp-4.4.0/conf/editor/deployment.yaml
     ports:
+      - "8280:8280"
+      - "9763:9763"
       - "9743:9743"
       - "9390:9390"
       - "5005:5005"
@@ -72,4 +74,3 @@ services:
       interval: 10s
       timeout: 120s
       retries: 5
-      
