@@ -1,4 +1,4 @@
-@App:name("ReceiveAndCount")
+@App:name("KafkaReceiveAndCount")
 
 @App:description('Receive events via Kafka and view the output on the console')
 

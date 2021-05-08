@@ -40,11 +40,12 @@ services:
     image: mysql:5.7.19
     container_name: sp-rdbms
     ports:
-      - 3306
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./mysql/scripts:/docker-entrypoint-initdb.d
+      - ./dbdata:/var/lib/mysql
     command: --max-connections=10000
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-proot"]
@@ -57,11 +58,18 @@ services:
   editor:
     image: wso2/wso2sp-editor:4.4.0
     container_name: wso2sp-editor
+    volumes:
+      - ./wso2/workspace:/home/wso2carbon/wso2sp-4.4.0/wso2/editor/deployment/workspace
+      - type: bind
+        source: ./wso2/conf/deployment.yaml
+        target: /home/wso2carbon/wso2sp-4.4.0/conf/editor/deployment.yaml
     ports:
       - "9743:9743"
       - "9390:9390"
+      - "5005:5005"
     healthcheck:
       test: ["CMD", "nc", "-z","localhost", "9743"]
       interval: 10s
       timeout: 120s
       retries: 5
+      

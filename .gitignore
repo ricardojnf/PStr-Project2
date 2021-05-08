@@ -30,3 +30,5 @@ rat.txt
 !**/files/.gitkeep
 
 *.csv
+*dbdata
+*kafka-data
