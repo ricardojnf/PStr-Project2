@@ -78,7 +78,7 @@ This section covers how to publish the CSV Taxi data to a kafka topic, which wil
 2. cd usr/bin to find the following scripts
 
 * See group ids: kafka-consumer-groups.sh --bootstrap-server kafka:9092 --list
-* See kafka topics: kafka-topics.sh --list --bootstrap-server localhost:2181
+* See kafka topics: kafka-topics.sh --list --bootstrap-server kafka:9092
 
 * Interactive CLI record publisher: kafka-console-producer.sh --broker-list kafka:9092 --topic productions
 
