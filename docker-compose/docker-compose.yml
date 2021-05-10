@@ -37,7 +37,9 @@ services:
     volumes:
       - ./kafka-data:/usr/bin/kafka-data
   mysql:
-    image: mysql:5.7.19
+    image: mysql:8.0.23
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
     container_name: sp-rdbms
     ports:
       - "3306:3306"
