@@ -32,4 +32,4 @@ rat.txt
 *.csv
 *dbdata
 *kafka-data
-/workspace/*
+workspace/*
