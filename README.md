@@ -69,11 +69,12 @@ You are free to use mysql workbench to explor/change the databases and create ne
 ## Important: Reseting the database server
 You can delete the 'dbdata' folder on 'docker-compose/dbdata', this will delete everything about the database and it will be reconstructed on the next docker compose.
 
-# Useful tutorials
+# Useful tutorials - https://docs.wso2.com/display/SP440/Tutorials
 * Get used to the editor: https://docs.wso2.com/display/SP440/Creating+a+Simple+Siddhi+Application
 * Consuming events from external source: https://docs.wso2.com/display/SP440/Consuming+Events
 * Pre-process data: https://docs.wso2.com/display/SP440/Pre-processing+Streaming+Data
 * Database integration: https://docs.wso2.com/display/SP440/Integrating+Datastores
+* Capturing Changes from Data Stores:https://docs.wso2.com/display/SP440/Capturing+Changes+from+Data+Stores
 
 # Kafka integration
 ## Testing kafka
