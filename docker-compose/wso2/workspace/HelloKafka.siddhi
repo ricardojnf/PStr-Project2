@@ -63,3 +63,5 @@ insert into TotalStreamWithBatch;
 from TotalStreamWithBatch[total < 10]
 select batchNumber, total as lowTotal
 insert into LowProductionAlertStream;
+
+
