@@ -74,7 +74,14 @@ You can delete the 'dbdata' folder on 'docker-compose/dbdata', this will delete 
 * Consuming events from external source: https://docs.wso2.com/display/SP440/Consuming+Events
 * Pre-process data: https://docs.wso2.com/display/SP440/Pre-processing+Streaming+Data
 * Database integration: https://docs.wso2.com/display/SP440/Integrating+Datastores
-* Capturing Changes from Data Stores:https://docs.wso2.com/display/SP440/Capturing+Changes+from+Data+Stores
+* Capturing Changes from Data Stores: https://docs.wso2.com/display/SP440/Capturing+Changes+from+Data+Stores
+
+## 
+
+* Summarizing Stream Data - Short Term: https://docs.wso2.com/display/SP440/Summarizing+Stream+Data+-+Short+Term
+* Streaming Data Summarization (Incremental Aggregation): https://docs.wso2.com/pages/viewpage.action?pageId=112390451
+* Publishing Processed Events: https://docs.wso2.com/display/SP440/Publishing+Processed+Events
+* Correlating Simple Events: https://docs.wso2.com/display/SP440/Correlating+Simple+Events
 
 # Kafka integration
 ## Testing kafka
@@ -148,6 +155,15 @@ Make sure to setup the source url as '0.0.0.0' instead of 'localhost'.
 Make sure your store settigns are setup with the following attributes, address by name, useSSL=false, and correct password and user.
 </pre>
 <code>@store(type='rdbms', jdbc.url="jdbc:mysql://sp-rdbms:3306/SweetFactoryDB?useSSL=false", username="wso2carbon", password="wso2carbon" , jdbc.driver.name="com.mysql.jdbc.Driver")</code>
+</details>
+
+
+<details>
+<summary>Linux: Docker container has no write premissions</summary>
+
+<pre>
+Run the following command on the needed folder (replace wso2 if needed): chmod a+rwx -E wso2/
+</pre>
 </details>
 
 
