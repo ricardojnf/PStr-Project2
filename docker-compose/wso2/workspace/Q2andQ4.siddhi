@@ -1,0 +1,12 @@
+@App:name('SweetTotalApp')
+ 
+define stream SweetProductionStream (name string, amount long);
+ 
+@sink(type='log', prefix='Sweet Totals:')
+define stream SweetTotalStream(name string, totalProduction long);
+ 
+@info(name='SweetTotalQuery')
+from SweetProductionStream
+select name, sum(amount) as totalProduction
+group by name
+insert into SweetTotalStream;

@@ -1,0 +1,83 @@
+@App:name("Q2")
+
+@App:description('Receive events via Kafka and view the output on the console')
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs string,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream GridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, fare_amount double, tip_amount double, pickup_datetime long,dropoff_datetime long);
+
+define stream FilteredGridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, fare_amount double, tip_amount double, pickup_datetime long,dropoff_datetime long);
+
+define stream DropoffTaxis (medallion string, drop_lon_grid long, drop_lat_grid long, drop_tstamp long);
+
+define stream PickupTaxis (medallion string, pick_tstamp long);
+
+define stream EmptyTaxis (drop_lon_grid long, drop_lat_grid long, taxis_count long);
+
+define stream AverageEarnings (pick_lon_grid long, pick_lat_grid long, earnings double, occur_count long);
+
+@sink(type='log')
+define stream MostProfitableAreas (pick_lon_grid long, pick_lat_grid long, profit double);
+
+-- Transform to grid 600x600
+
+@info(name='query2')
+from RawInputStream
+select medallion, math:round((pickup_longitude - (-74.916578)) /  (0.005986 / 2)) as pick_lon_grid, math:round((41.47718278 - pickup_latitude) /  (0.004491556 / 2)) as pick_lat_grid, math:round((dropoff_longitude - (-74.916578)) /  (0.005986 / 2)) as drop_lon_grid, math:round((41.47718278 - dropoff_latitude) /  (0.004491556 / 2)) as drop_lat_grid, fare_amount, tip_amount, time:timestampInMilliseconds(pickup_datetime, 'yyyy-MM-dd HH:mm:ss') as pickup_datetime, time:timestampInMilliseconds(dropoff_datetime, 'yyyy-MM-dd HH:mm:ss') as dropoff_datetime
+insert into GridInputStream;
+
+-- Filter to events only on 600x600 grid
+
+@info(name='query3')
+from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 600 and pick_lat_grid >= 0 and pick_lat_grid <= 600 and drop_lon_grid >= 0 and drop_lon_grid <= 600 and drop_lat_grid >= 0 and drop_lat_grid <= 600 ]
+select medallion, pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, fare_amount, tip_amount, pickup_datetime, dropoff_datetime
+insert into FilteredGridInputStream;
+
+--------- EMPTY TAXIS -------------
+
+-- MaxDropoffTime per taxi
+
+@info(name='query4')
+from FilteredGridInputStream#window.time(30 sec)
+select medallion, drop_lon_grid, drop_lat_grid, max(dropoff_datetime) as drop_tstamp
+    group by medallion
+insert into DropoffTaxis;
+
+-- MaxPickupTime per taxi
+
+@info(name='query5')
+from FilteredGridInputStream#window.time(30 sec)
+select medallion, max(pickup_datetime) as pick_tstamp
+    group by medallion
+insert into PickupTaxis;
+
+-- Count the EmptyTaxis per cell
+
+from DropoffTaxis#window.time(30 sec) as D join PickupTaxis#window.time(30 sec) as P on D.medallion == P.medallion
+select drop_lon_grid, drop_lat_grid, count() as taxis_count
+    group by drop_lon_grid, drop_lat_grid
+    having drop_tstamp > pick_tstamp
+insert into EmptyTaxis;
+
+-------- FARE AMOUNT AND TIP -----------
+
+from FilteredGridInputStream#window.time(15 sec)
+select pick_lon_grid, pick_lat_grid, sum(fare_amount)+sum(tip_amount) as earnings, count() as occur_count
+    group by pick_lon_grid, pick_lat_grid
+insert into AverageEarnings;
+
+-- Count the EmptyTaxis per cell
+@info(name='query7')
+from EmptyTaxis#window.time(15 sec) as E join AverageEarnings#window.time(15 sec) as A on E.drop_lon_grid == A.pick_lon_grid and E.drop_lat_grid == A.pick_lat_grid
+select pick_lon_grid, pick_lat_grid, ((earnings / occur_count) / taxis_count) as profit
+    group by drop_lon_grid, drop_lat_grid
+    order by profit
+    limit 5
+insert into MostProfitableAreas;

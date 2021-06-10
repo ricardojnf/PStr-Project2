@@ -1,0 +1,53 @@
+@App:name("Q4")
+
+@App:description('Receive events via Kafka and view the output on the console')
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream GridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
+
+define stream FilteredGridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
+
+define stream TimesAreasStream (pick_lon_grid long, pick_lat_grid long, total_time long, total_count long);
+
+
+
+@sink(type='log')
+define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long, avg_time long);
+
+-- Transform to grid 600x600
+
+@info(name='query2')
+from RawInputStream
+select medallion, math:round((pickup_longitude - (-74.916578)) /  (0.005986 / 2)) as pick_lon_grid, math:round((41.47718278 - pickup_latitude) /  (0.004491556 / 2)) as pick_lat_grid, math:round((dropoff_longitude - (-74.916578)) /  (0.005986 / 2)) as drop_lon_grid, math:round((41.47718278 - dropoff_latitude) /  (0.004491556 / 2)) as drop_lat_grid, trip_time_in_secs
+insert into GridInputStream;
+
+-- Filter to events only on 600x600 grid
+
+@info(name='query3')
+from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 600 and pick_lat_grid >= 0 and pick_lat_grid <= 600 and drop_lon_grid >= 0 and drop_lon_grid <= 600 and drop_lat_grid >= 0 and drop_lat_grid <= 600 ]
+select medallion, pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, trip_time_in_secs
+insert into FilteredGridInputStream;
+
+
+from FilteredGridInputStream#window.time(10 sec)
+select pick_lon_grid, pick_lat_grid, sum(trip_time_in_secs) as total_time, count() as total_count
+    group by pick_lon_grid, pick_lat_grid
+output every 10 sec
+insert into TimesAreasStream;
+
+@info(name='query7')
+from TimesAreasStream
+select pick_lon_grid, pick_lat_grid, (total_time / total_count) as avg_time
+    group by pick_lon_grid, pick_lat_grid
+    order by avg_time desc
+    limit 5
+insert into CongestedAreasStream;
+

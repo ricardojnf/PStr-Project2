@@ -22,7 +22,7 @@ have information about the name of the sweet and how much of it is produced.
         partition.no.list='0',
         threading.option='single.thread',
         group.id="group",
-        bootstrap.servers='kafka:9092',
+        bootstrap.servers='kafka:9092', 
         @map(type='json'))
 define stream SweetProductionStream (name string, amount double);
 
