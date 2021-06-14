@@ -1,0 +1,13 @@
+In this section we individually present the interpretation and rationale for our solutions.
+
+\subsection{Question 2}
+
+Question 2 is intended to: \textit{"Identify areas that are currently most profitable for taxi drivers"}.\par
+For this, we start by dividing the map into a 600x600 grid. To identify the most profitable areas, we divided the profit made in that area by the number of empty taxis.
+For each area we calculate the profit in that area, where we consider the fares plus tips in each area in the last 15 minutes.\par
+To calculate the number of empty taxis, we selected, for each taxi, its highest pickup$_-$datetime and its highest dropoff$_-$datetime, in the last 30 minutes, and for each area we count the taxis that have not had any pickups recently, that is, whose dropoff$_-$datetime is highest than pickup$_-$datetime.\par
+
+\subsection{Question 4}
+
+Question 4 is intended to: \textit{"Detect congested areas"}.\par
+For this query, as in query 2 we split the map into a 600x600 grid. To identify the most congested areas, we chose to identify the areas with the longest average travel time. For this, for each area where the pickup occurred, we calculated the average time of trips that started in that area, accessing the values in \textit{trip$_-$time$_-$in$_-$secs}. 
