@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.25)  14 JUN 2021 18:04
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.25)  15 JUN 2021 22:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -950,12 +950,19 @@ LaTeX Info: Redefining \nameref on input line 15.
 Package: inputenc 2018/08/11 v1.3c Input encoding file
 \inpenc@prehook=\toks46
 \inpenc@posthook=\toks47
-) (./intro.tex)
-(./queries.tex)
-No file paper.bbl.
-[1
+) (./intro.tex
+Overfull \hbox (28.24474pt too wide) in paragraph at lines 17--17
+[]\OT1/cmr/m/n/10 where $\OML/cmm/m/it/10 MIN[]LON \OT1/cmr/m/n/10 = \OMS/cmsy/
+m/n/10 ^^@\OT1/cmr/m/n/10 74\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 916578$, $\OML/cm
+m/m/it/10 MAX[]LAT \OT1/cmr/m/n/10 = 41\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 477182
+78$ and $\OML/cmm/m/it/10 LON[]DELTA$
+ []
 
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}] [2]
+) (./queries.tex [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
+No file paper.bbl.
+[2]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 46.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 46.
  (./paper.aux)
@@ -966,24 +973,26 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 46.
  ) 
 Here is how much of TeX's memory you used:
- 24320 strings out of 483140
- 493275 string characters out of 5965150
- 783908 words of memory out of 5000000
+ 24323 strings out of 483140
+ 493319 string characters out of 5965150
+ 784908 words of memory out of 5000000
  38868 multiletter control sequences out of 15000+600000
  535263 words of font info for 34 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
- 64i,6n,103p,948b,320s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 64i,8n,103p,948b,320s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx9.pfb></usr/share/texli
-ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmti10.pfb>
-Output written on paper.pdf (2 pages, 95319 bytes).
+ve/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmti10.pfb>
+Output written on paper.pdf (2 pages, 116905 bytes).
 PDF statistics:
- 96 PDF objects out of 1000 (max. 8388607)
- 60 compressed objects within 1 object stream
- 9 named destinations out of 1000 (max. 500000)
+ 107 PDF objects out of 1000 (max. 8388607)
+ 69 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
  165 words of extra memory for PDF output out of 10000 (max. 10000000)
 

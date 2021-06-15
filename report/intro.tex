@@ -8,4 +8,11 @@ This project aims to present solutions (queries) on a dataset that contains info
 \item \textbf{Q5:} Select the most pleasant taxi drivers. 
 \end{itemize}
 
+To divide the map into an NxN grid, given the longitude and latitude values of the event, we use the following formulas to calculate the grid cell:
+\begin{align}
+LONG_-CELL = round((longitude - MIN_-LON) / LON_-DELTA) \\
+LAT_-CELL = round((MAX_-LAT - latitude) / LAT_-DELTA)
+\end{align}
+
+where $MIN_-LON = -74.916578$, $MAX_-LAT = 41.47718278$ and $LON_-DELTA$ and $LAT_-DELTA$ are deltas corresponding to the intended N for the NxN grid. \par
 This report is structured as follows: in section 2 we present the rationale for solving each issue as well as our interpretation of the issue; in section 3, we present in greater detail our solution to one of the questions, as well as the results obtained; and, finally, in section 4, we present our conclusions about the solutions and results obtained. 
