@@ -21,7 +21,7 @@ define stream PickupTaxis (medallion string, pick_tstamp long);
 
 define stream EmptyTaxis (drop_lon_grid long, drop_lat_grid long, taxis_count long);
 
-define stream AverageEarnings (pick_lon_grid long, pick_lat_grid long, earnings double, occur_count long);
+define stream AverageEarnings (pick_lon_grid long, pick_lat_grid long, avg_fare double);
 
 @sink(type='log')
 define stream MostProfitableAreas (pick_lon_grid long, pick_lat_grid long, profit double);
@@ -45,39 +45,30 @@ insert into FilteredGridInputStream;
 -- MaxDropoffTime per taxi
 
 @info(name='query4')
-from FilteredGridInputStream#window.time(30 sec)
+from FilteredGridInputStream#window.timeBatch(30 sec)
 select medallion, drop_lon_grid, drop_lat_grid, max(dropoff_datetime) as drop_tstamp
     group by medallion
 insert into DropoffTaxis;
 
--- MaxPickupTime per taxi
-
-@info(name='query5')
-from FilteredGridInputStream#window.time(30 sec)
-select medallion, max(pickup_datetime) as pick_tstamp
-    group by medallion
-insert into PickupTaxis;
-
 -- Count the EmptyTaxis per cell
 
-from DropoffTaxis#window.time(30 sec) as D join PickupTaxis#window.time(30 sec) as P on D.medallion == P.medallion
+from DropoffTaxis#window.timeBatch(30 sec)
 select drop_lon_grid, drop_lat_grid, count() as taxis_count
     group by drop_lon_grid, drop_lat_grid
-    having drop_tstamp > pick_tstamp
 insert into EmptyTaxis;
 
 -------- FARE AMOUNT AND TIP -----------
 
-from FilteredGridInputStream#window.time(15 sec)
-select pick_lon_grid, pick_lat_grid, sum(fare_amount)+sum(tip_amount) as earnings, count() as occur_count
+from FilteredGridInputStream#window.timeBatch(15 sec)
+select pick_lon_grid, pick_lat_grid, (sum(fare_amount)+sum(tip_amount)) / count() as avg_fare
     group by pick_lon_grid, pick_lat_grid
 insert into AverageEarnings;
 
 -- Count the EmptyTaxis per cell
 @info(name='query7')
-from EmptyTaxis#window.time(15 sec) as E join AverageEarnings#window.time(15 sec) as A on E.drop_lon_grid == A.pick_lon_grid and E.drop_lat_grid == A.pick_lat_grid
-select pick_lon_grid, pick_lat_grid, ((earnings / occur_count) / taxis_count) as profit
-    group by drop_lon_grid, drop_lat_grid
-    order by profit
+from EmptyTaxis#window.timeBatch(30 sec) as E join AverageEarnings#window.timeBatch(15 sec) as A on (E.drop_lon_grid == A.pick_lon_grid and E.drop_lat_grid == A.pick_lat_grid)
+select pick_lon_grid, pick_lat_grid, (avg_fare / taxis_count) as profit
+    group by pick_lon_grid, pick_lat_grid
+    order by profit desc
     limit 5
 insert into MostProfitableAreas;
