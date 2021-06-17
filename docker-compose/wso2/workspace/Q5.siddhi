@@ -14,8 +14,6 @@ define stream RawInputStream (medallion string,hack_license string,pickup_dateti
 @sink(type='log')
 define stream MaxTaxiTipper (medallion string, total_tip double);
 
-
-
 from RawInputStream#window.timeBatch(10 sec)
 select medallion, sum(tip_amount) as total_tip
     group by medallion
