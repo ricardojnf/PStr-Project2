@@ -16,7 +16,7 @@ define stream GridInputStream (medallion string, pick_lon_grid long, pick_lat_gr
 define stream FilteredGridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
 
 @sink(type='log')
-define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long, avg_time double);
+define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long);
 
 -- Transform to grid 600x600
 
@@ -33,10 +33,12 @@ select medallion, pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, tr
 insert into FilteredGridInputStream;
 
 @info(name='query7')
-from FilteredGridInputStream#window.timeBatch(10 sec)
-select pick_lon_grid, pick_lat_grid, avg(trip_time_in_secs) as avg_time
-    group by pick_lon_grid, pick_lat_grid
-    order by avg_time desc
-    limit 5
+from every e1=FilteredGridInputStream 
+    -> e2=FilteredGridInputStream[e1.pick_lon_grid == e2.pick_lon_grid and e1.pick_lat_grid == e2.pick_lat_grid and e2.trip_time_in_secs > e1.trip_time_in_secs]
+    -> e3=FilteredGridInputStream[e2.pick_lon_grid == e3.pick_lon_grid and e2.pick_lat_grid == e3.pick_lat_grid and e3.trip_time_in_secs > e2.trip_time_in_secs]
+    -> e4=FilteredGridInputStream[e3.pick_lon_grid == e4.pick_lon_grid and e3.pick_lat_grid == e4.pick_lat_grid and e4.trip_time_in_secs > e3.trip_time_in_secs]
+    within 10 sec
+select e1.pick_lon_grid, e1.pick_lat_grid
 insert into CongestedAreasStream;
+
 
