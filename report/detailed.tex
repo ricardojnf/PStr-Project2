@@ -27,8 +27,7 @@ define stream FilteredGridInputStream (medallion string, pick_lon_grid long,
 	drop_lat_grid long, trip_time_in_secs long);
 
 @sink(type='log')
-define stream CongestedAreasStream (pick_lon_grid long, 
-	pick_lat_grid long, avg_time double);
+define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long);
 __________
 \end{lstlisting}
 
@@ -67,14 +66,21 @@ Then we filter only the events whose dropoffs and pickups occur with a latitude 
 \begin{lstlisting}
 __________
 @info(name='query7')
-from FilteredGridInputStream#window.timeBatch(10 sec)
-select pick_lon_grid, pick_lat_grid, avg(trip_time_in_secs) as avg_time
-    group by pick_lon_grid, pick_lat_grid
-    order by avg_time desc
-    limit 5
+from every e1=FilteredGridInputStream 
+    -> e2=FilteredGridInputStream[e1.pick_lon_grid == e2.pick_lon_grid and 
+    					e1.pick_lat_grid == e2.pick_lat_grid and 
+    					e2.trip_time_in_secs > e1.trip_time_in_secs]
+    -> e3=FilteredGridInputStream[e2.pick_lon_grid == e3.pick_lon_grid and 
+    					e2.pick_lat_grid == e3.pick_lat_grid and 
+    					e3.trip_time_in_secs > e2.trip_time_in_secs]
+    -> e4=FilteredGridInputStream[e3.pick_lon_grid == e4.pick_lon_grid and 
+    					e3.pick_lat_grid == e4.pick_lat_grid and 
+    					e4.trip_time_in_secs > e3.trip_time_in_secs]
+    within 10 sec
+select e1.pick_lon_grid, e1.pick_lat_grid
 insert into CongestedAreasStream;
 __________
 \end{lstlisting}
 
-Finally, in a 10 second tumbling window (\#window.timeBatch(...) processes a tumbling window) we calculate the average travel time for each area where pickups occurred. In order to select the most congested areas, we order each area by the average travel time in a descending order (\textit{order by $avg_-time$ desc}) and select the first five areas (\textit{limit 5}), which represent the five with the highest average travel time and, therefore, are the most congested.\par
+Finally, over the last 10 seconds, we used a logical pattern, selecting the areas that had a sequence of four trips, all increasing in duration, accessing the values in \textit{trip$_-$time$_-$in$_-$secs}. In this way we identify areas that have had a peak in travel time and are therefore the most congested areas.\par
 We insert the results into the \textit{CongestedAreasStream}, which is the output stream that prints the results to the console (as it was defined with \textit{\@sink(type='log')}) 

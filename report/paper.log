@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.25)  16 JUN 2021 19:52
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.25)  17 JUN 2021 16:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -961,12 +961,12 @@ m/m/it/10 MAX[]LAT \OT1/cmr/m/n/10 = 41\OML/cmm/m/it/10 :\OT1/cmr/m/n/10 477182
 ) (./queries.tex [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
-(./detailed.tex [2]
+(./detailed.tex
 Overfull \hbox (24.72769pt too wide) in paragraph at lines 12--13
 [][][][][][][][][][][][][][][][][][] 
  []
 
-
+[2]
 Overfull \hbox (30.27771pt too wide) in paragraph at lines 21--22
 [][][][][][][][][][][][][][][][][][][] 
  []
@@ -977,8 +977,18 @@ Overfull \hbox (74.67786pt too wide) in paragraph at lines 25--26
  []
 
 
-Overfull \hbox (19.17767pt too wide) in paragraph at lines 41--42
+Overfull \hbox (74.67786pt too wide) in paragraph at lines 30--31
+[][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (19.17767pt too wide) in paragraph at lines 40--41
 [][][][][][][][][][][][][][][][][][][][][]
+ []
+
+
+Overfull \hbox (107.97797pt too wide) in paragraph at lines 41--42
+[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
@@ -987,30 +997,65 @@ Overfull \hbox (107.97797pt too wide) in paragraph at lines 42--43
  []
 
 
-Overfull \hbox (107.97797pt too wide) in paragraph at lines 43--44
-[][][][][][][][][][][][][][][][][][][][][][][][][][][] 
- []
-
-
-Overfull \hbox (113.52798pt too wide) in paragraph at lines 44--45
+Overfull \hbox (113.52798pt too wide) in paragraph at lines 43--44
 [][][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 LaTeX Font Info:    Trying to load font information for OML+cmr on input line 5
-5.
+4.
 (/usr/share/texlive/texmf-dist/tex/latex/base/omlcmr.fd
 File: omlcmr.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OML/cmr/m/n' in size <9> not available
-(Font)              Font shape `OML/cmm/m/it' tried instead on input line 55.
+(Font)              Font shape `OML/cmm/m/it' tried instead on input line 54.
 
-Overfull \hbox (19.17767pt too wide) in paragraph at lines 55--56
+Overfull \hbox (19.17767pt too wide) in paragraph at lines 54--55
 [][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 [3]
-Overfull \hbox (46.92776pt too wide) in paragraph at lines 71--72
-[][][][][][][][][][][][][][][][][][][] 
+Overfull \hbox (63.57782pt too wide) in paragraph at lines 70--71
+[][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (96.87793pt too wide) in paragraph at lines 71--72
+[][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (119.078pt too wide) in paragraph at lines 72--73
+[][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (63.57782pt too wide) in paragraph at lines 73--74
+[][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (96.87793pt too wide) in paragraph at lines 74--75
+[][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (119.078pt too wide) in paragraph at lines 75--76
+[][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (63.57782pt too wide) in paragraph at lines 76--77
+[][][][][][][][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (96.87793pt too wide) in paragraph at lines 77--78
+[][][][][][][][][][][][][][][] 
+ []
+
+
+Overfull \hbox (119.078pt too wide) in paragraph at lines 78--79
+[][][][][][][][][][][][][][] 
  []
 
 ) (./conclusion.tex)
@@ -1026,9 +1071,9 @@ Package rerunfilecheck Info: File `paper.out' has not changed.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 48.
  ) 
 Here is how much of TeX's memory you used:
- 24685 strings out of 483140
- 496700 string characters out of 5965150
- 813908 words of memory out of 5000000
+ 24691 strings out of 483140
+ 496790 string characters out of 5965150
+ 814908 words of memory out of 5000000
  39151 multiletter control sequences out of 15000+600000
  537276 words of font info for 41 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
@@ -1045,10 +1090,10 @@ msfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmt
 i10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb
 >
-Output written on paper.pdf (4 pages, 161501 bytes).
+Output written on paper.pdf (4 pages, 160387 bytes).
 PDF statistics:
- 206 PDF objects out of 1000 (max. 8388607)
- 162 compressed objects within 2 object streams
- 78 named destinations out of 1000 (max. 500000)
+ 213 PDF objects out of 1000 (max. 8388607)
+ 169 compressed objects within 2 object streams
+ 84 named destinations out of 1000 (max. 500000)
  165 words of extra memory for PDF output out of 10000 (max. 10000000)
 
