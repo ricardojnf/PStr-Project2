@@ -1,0 +1,46 @@
+@App:name("Q1")
+@App:description("Description of the plan")
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+        
+        
+--@sink(type='log')
+--define stream MostProfitableAreas ();
+
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream UniqueRides (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+@sink(type='log')
+define stream last30MinWithCoords(count long, pickup_longitude double, pickup_latitude double, dropoff_longitude double, dropoff_latitude double);
+
+
+
+--filters
+
+@info(name='last30MinRideCoordinates')
+from UniqueRides#window.time(30 min)
+select count(*) as count, ((pickup_longitude - -74.916578)/0.005986) as pickup_longitude, ((41.47718278 - pickup_latitude)/0.004491556) as pickup_latitude, ((dropoff_longitude - -74.916578)/0.005986) as dropoff_longitude, ((41.47718278 - dropoff_latitude)/0.004491556) as dropoff_latitude
+group by pickup_longitude, pickup_latitude, dropoff_longitude, dropoff_latitude
+having pickup_longitude > 0 and pickup_longitude < 300 and pickup_latitude > 0 and pickup_latitude < 300 and dropoff_longitude > 0 and dropoff_longitude < 300 and dropoff_latitude > 0 and dropoff_latitude < 300
+order by count desc
+limit 10
+insert into last30MinWithCoords;
+
+--make it only return a top-10
+
+
+
+
+
+
+
+
+
+
