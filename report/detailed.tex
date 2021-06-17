@@ -1,0 +1,80 @@
+In this section we present in more detail one of the answered questions, presenting the code and the rationale behind the decisions taken. The question we are going to present is Q4: \textit{"Detect congested areas"}.\par
+\small
+\begin{lstlisting}
+__________
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,
+	pickup_datetime string, dropoff_datetime string,
+	trip_time_in_secs long,trip_distance string,
+	pickup_longitude double,pickup_latitude double,
+	dropoff_longitude double, dropoff_latitude double,
+	payment_type string,fare_amount double,
+	surcharge string,mta_tax string,tip_amount double,
+	tolls_amount double,total_amount double);
+
+define stream GridInputStream (medallion string, pick_lon_grid long, 
+	pick_lat_grid long, drop_lon_grid long, 
+	drop_lat_grid long, trip_time_in_secs long);
+
+define stream FilteredGridInputStream (medallion string, pick_lon_grid long, 
+	pick_lat_grid long, drop_lon_grid long, 
+	drop_lat_grid long, trip_time_in_secs long);
+
+@sink(type='log')
+define stream CongestedAreasStream (pick_lon_grid long, 
+	pick_lat_grid long, avg_time double);
+__________
+\end{lstlisting}
+
+For this question we use 4 streams to process the data, where RawInputStream is the stream that takes the data directly from the dataset's csv and CongestedAreasStream is the output stream where it gives us the answers of which are the most congested areas.\par
+
+\begin{lstlisting}
+__________
+@info(name='query2')
+from RawInputStream
+select medallion, math:round((pickup_longitude - (-74.916578)) /  (0.005986 / 2)) as pick_lon_grid, 
+math:round((41.47718278 - pickup_latitude) /  (0.004491556 / 2)) as pick_lat_grid, 
+math:round((dropoff_longitude - (-74.916578)) /  (0.005986 / 2)) as drop_lon_grid, 
+math:round((41.47718278 - dropoff_latitude) /  (0.004491556 / 2)) as drop_lat_grid, 
+trip_time_in_secs
+insert into GridInputStream;
+__________
+\end{lstlisting}
+
+Using the formulas presented above, we transformed the longitude and latitude coordinates into grid cells, thus selecting the trip pickup and dropoff grid cells and also the medallion and the trip time (\textit{$trip_-time_-in_-secs$}), inserting the data in the GridInputStream stream.
+
+\begin{lstlisting}
+__________
+@info(name='query3')
+from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 600 
+	and pick_lat_grid >= 0 and pick_lat_grid <= 600 and 
+	drop_lon_grid >= 0 and drop_lon_grid <= 600 and 
+	drop_lat_grid >= 0 and drop_lat_grid <= 600 ]
+select medallion, pick_lon_grid, pick_lat_grid, 
+	drop_lon_grid, drop_lat_grid, trip_time_in_secs
+insert into FilteredGridInputStream;
+__________
+\end{lstlisting}
+
+Then we filter only the events whose dropoffs and pickups occur with a latitude cell greater than zero and less than 600 and a longitude cell greater than zero and less than 600, inserting the same attributes of GridInputStream in FilteredGridInputStream.\par
+
+\begin{lstlisting}
+__________
+@info(name='query7')
+from FilteredGridInputStream#window.timeBatch(10 sec)
+select pick_lon_grid, pick_lat_grid, avg(trip_time_in_secs) as avg_time
+    group by pick_lon_grid, pick_lat_grid
+    order by avg_time desc
+    limit 5
+insert into CongestedAreasStream;
+__________
+\end{lstlisting}
+
+Finally, in a 10 second tumbling window (\#window.timeBatch(...) processes a tumbling window) we calculate the average travel time for each area where pickups occurred. In order to select the most congested areas, we order each area by the average travel time in a descending order (\textit{order by $avg_-time$ desc}) and select the first five areas (\textit{limit 5}), which represent the five with the highest average travel time and, therefore, are the most congested.\par
+We insert the results into the \textit{CongestedAreasStream}, which is the output stream that prints the results to the console (as it was defined with \textit{\@sink(type='log')}) 

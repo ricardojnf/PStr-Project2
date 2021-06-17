@@ -15,12 +15,8 @@ define stream GridInputStream (medallion string, pick_lon_grid long, pick_lat_gr
 
 define stream FilteredGridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
 
-define stream TimesAreasStream (pick_lon_grid long, pick_lat_grid long, total_time long, total_count long);
-
-
-
 @sink(type='log')
-define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long, avg_time long);
+define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long, avg_time double);
 
 -- Transform to grid 600x600
 
@@ -36,16 +32,9 @@ from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 600 and pick_lat_
 select medallion, pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, trip_time_in_secs
 insert into FilteredGridInputStream;
 
-
-from FilteredGridInputStream#window.time(10 sec)
-select pick_lon_grid, pick_lat_grid, sum(trip_time_in_secs) as total_time, count() as total_count
-    group by pick_lon_grid, pick_lat_grid
-output every 10 sec
-insert into TimesAreasStream;
-
 @info(name='query7')
-from TimesAreasStream
-select pick_lon_grid, pick_lat_grid, (total_time / total_count) as avg_time
+from FilteredGridInputStream#window.timeBatch(10 sec)
+select pick_lon_grid, pick_lat_grid, avg(trip_time_in_secs) as avg_time
     group by pick_lon_grid, pick_lat_grid
     order by avg_time desc
     limit 5
