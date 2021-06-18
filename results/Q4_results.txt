@@ -1,0 +1,17 @@
+wso2sp-editor | [2021-06-18 14:08:49,441]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : [Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,464]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : [Event{timestamp=1624025329463, data=[312, 312], isExpired=false}, 
+Event{timestamp=1624025329463, data=[312, 312], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,470]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : [Event{timestamp=1624025329469, data=[309, 328], isExpired=false}, 
+Event{timestamp=1624025329469, data=[309, 328], isExpired=false}, 
+Event{timestamp=1624025329469, data=[309, 328], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,471]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : Event{timestamp=1624025329470, data=[312, 322], isExpired=false}
+wso2sp-editor | [2021-06-18 14:08:49,472]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : Event{timestamp=1624025329471, data=[303, 339], isExpired=false}
+wso2sp-editor | [2021-06-18 14:08:49,477]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q4 : CongestedAreasStream : Event{timestamp=1624025329476, data=[320, 317], isExpired=false}
+

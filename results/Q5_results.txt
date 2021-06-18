@@ -1,0 +1,8 @@
+wso2sp-editor | [2021-06-18 14:14:11,696]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q5 : MaxTaxiTipper : Event{timestamp=1624025651302, data=[67EF2521D4D3A785DD5E11B7A4222F95, 531.9499999999999], isExpired=false}
+
+wso2sp-editor | [2021-06-18 14:14:21,675]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q5 : MaxTaxiTipper : Event{timestamp=1624025661180, data=[6EE7647F7BB67B5B5FDC07F24C5F69D7, 177.29999999999998], isExpired=false}
+
+wso2sp-editor | [2021-06-18 14:14:31,577]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q5 : MaxTaxiTipper : Event{timestamp=1624025671365, data=[8670B12F794024A37D4399BADF1E7F47, 110.17], isExpired=false}
+
+wso2sp-editor | [2021-06-18 14:14:41,639]  INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - Q5 : MaxTaxiTipper : Event{timestamp=1624025681358, data=[55CC919C6D6F59FA2AAAB21DF39C6147, 118.11999999999999], isExpired=false}
+

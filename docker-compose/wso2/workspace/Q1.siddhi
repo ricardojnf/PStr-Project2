@@ -32,7 +32,7 @@ insert into FilteredGridInputStream;
 --filters
 
 @info(name='last30MinRideCoordinates')
-from FilteredGridInputStream#window.timeBatch(10 sec)
+from FilteredGridInputStream#window.timeBatch(30 sec)
 select pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, count() as ride_count
     group by pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid
     order by ride_count desc
