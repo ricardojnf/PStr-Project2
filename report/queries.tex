@@ -1,21 +1,55 @@
 In this section we individually present the interpretation and rationale for our solutions.
 
+\subsection{Question 1}
+Question 1 is intended to: \textit{``Find the top 10 most frequent routes during the last 30 minutes''}.
+
+This particular query is the same that was asked in the first delivery of this course and the execution was inspired in that same implementation with spark streaming.
+
+At first we started by translating the coordinates to a 300x300 grid as requested in the question. After that we filter all the invalid coordinates of the new grid since all valid values should be between 0 and 300.
+
+In order to get the top 10 most frequent areas we run a query which selects the most common coordinate combinations, of pickup and drop off, and their \textit{count()}, grouped by all the coordinates of a ride, orders them in descending order, of the \textit{count()}, and limit the top to 10 results.
+
+
+
 \subsection{Question 2}
 
-Question 2 is intended to: \textit{"Identify areas that are currently most profitable for taxi drivers"}.\par
+Question 2 is intended to: \textit{``Identify areas that are currently most profitable for taxi drivers"}.\par
 For this, we start by dividing the map into a 600x600 grid. To identify the most profitable areas, we divided the profit made in that area by the number of empty taxis.
 For each area we calculate the average profit in that area, where we consider the sum of fares plus the sum tips (using the aggregation function \textit{sum}) dividing by the number of trips (using the aggregation function \textit{count}), in each area in the last 15 minutes.\par
 To calculate the number of empty taxis, we selected, for each taxi, its highest dropoff$_-$datetime, in the last 30 minutes, and for each area we count the taxis, using the aggregation function \textit{count}.\par
 For the presentation of results, we sorted by average profit, descending, selecting only the first five results. 
 
+\subsection{Question 3}
+Question 3 is intended to: \textit{``send an alert whenever the average idle time of taxis is greater than 10 minutes''}.
+
+In our implementation we start by only selecting the medallion, to identify the taxi, and the pickup and drop off times for each event. In this selection we perform a parsing of the string value of the times to a timestamp using ``$time:timestampInMilliseconds(time_-string, format)$'', for example.
+
+Next we use the ``arrow'' (-$>$) logical pattern in order to select the sequence of drop off and pickup times from taxis with the same medallion and use it to calculate the idle time between rides of the same taxi.
+
+After that we perform a query over a time batch of 10 seconds so that we can see the results quickly and we select the computed average idle time, calculated with the function \textit{$avg()$} and we add a \textit{$having avg_-idle_-time > (10.0*60.0*1000.0)$} so that we only alert when the average idle time exceeds 10 minutes.
+
+At last at the sink we provide an alert message which says that a 10 minute threshold was exceeded.
+
 \subsection{Question 4}
 
-Question 4 is intended to: \textit{"Detect congested areas"}.\par
+Question 4 is intended to: \textit{``Detect congested areas"}.\par
 For this query, as in query 2 we split the map into a 600x600 grid. To identify the most congested areas, we used a logical pattern, selecting the areas that had a sequence of four trips, all increasing in duration, accessing the values in \textit{trip$_-$time$_-$in$_-$secs}.\par
 More details about this query in the Detailed Query Presentation section. 
 
 \subsection{Question 5}
 
-Question 5 is intended to: \textit{"Select the most pleasant taxi drivers"}.\par
+Question 5 is intended to: \textit{``Select the most pleasant taxi drivers"}.\par
 For this query, the solution was quite simple. To select the most pleasant taxi driver, we grouped by taxi driver, adding (using the aggregation function \textit{sum}) the tips received by the taxi driver on all trips that occurred in the time window. Then, sorting by the tip value in a descending way, just select the taxi driver that is at the top, using "\textit{limit 1}". 
+
+
+
+
+
+
+
+
+
+
+
+
 
