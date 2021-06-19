@@ -26,7 +26,7 @@ In our implementation we start by only selecting the medallion, to identify the 
 
 Next we use the ``arrow'' (-$>$) logical pattern in order to select the sequence of drop off and pickup times from taxis with the same medallion and use it to calculate the idle time between rides of the same taxi.
 
-After that we perform a query over a time batch of 10 seconds so that we can see the results quickly and we select the computed average idle time, calculated with the function \textit{$avg()$} and we add a \textit{$having avg_-idle_-time > (10.0*60.0*1000.0)$} so that we only alert when the average idle time exceeds 10 minutes.
+After that we perform a query over a time batch of 10 seconds so that we can see the results quickly and we select the computed average idle time, calculated with the function \textit{$avg()$} and we add a \textit{$having \ avg_-idle_-time > (10.0*60.0*1000.0)$} so that we only alert when the average idle time exceeds 10 minutes.
 
 At last at the sink we provide an alert message which says that a 10 minute threshold was exceeded.
 
