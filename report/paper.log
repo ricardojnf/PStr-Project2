@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.25)  20 JUN 2021 00:30
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2021.6.18)  20 JUN 2021 11:15
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1058,23 +1058,29 @@ Overfull \hbox (119.078pt too wide) in paragraph at lines 78--79
 [][][][][][][][][][][][][][] 
  []
 
-) (./conclusion.tex)
+) (./results.tex
+Overfull \hbox (8.03307pt too wide) in paragraph at lines 6--16
+\OT1/cmr/m/n/9 Event-times-tamp=1624024803129, data=[157, 161, 155, 162, 529], 
+is-Ex-pired=false, Event-
+ []
+
+[5]) (./conclusion.tex)
 No file paper.bbl.
-[5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 48.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 48.
+[6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 51.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 51.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 48.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 48.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 51.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 51.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: 9EAD4990FC66C7CFE0C7388390BA3ACA;64.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 48.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 51.
  ) 
 Here is how much of TeX's memory you used:
- 24694 strings out of 483140
- 496828 string characters out of 5965150
- 811906 words of memory out of 5000000
- 39151 multiletter control sequences out of 15000+600000
+ 24704 strings out of 483140
+ 496956 string characters out of 5965151
+ 811908 words of memory out of 5000000
+ 39152 multiletter control sequences out of 15000+600000
  537276 words of font info for 41 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  64i,8n,103p,948b,1739s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1090,10 +1096,10 @@ msfonts/cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmt
 i10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti9.pfb
 >
-Output written on paper.pdf (5 pages, 166772 bytes).
+Output written on paper.pdf (6 pages, 171342 bytes).
 PDF statistics:
- 220 PDF objects out of 1000 (max. 8388607)
- 175 compressed objects within 2 object streams
- 87 named destinations out of 1000 (max. 500000)
+ 231 PDF objects out of 1000 (max. 8388607)
+ 185 compressed objects within 2 object streams
+ 94 named destinations out of 1000 (max. 500000)
  165 words of extra memory for PDF output out of 10000 (max. 10000000)
 
