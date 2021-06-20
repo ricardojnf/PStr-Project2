@@ -1,0 +1,44 @@
+@App:name("Q4")
+
+@App:description('Receive events via Kafka and view the output on the console')
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream GridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
+
+define stream FilteredGridInputStream (medallion string, pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, trip_time_in_secs long);
+
+@sink(type='log')
+define stream CongestedAreasStream (pick_lon_grid long, pick_lat_grid long);
+
+-- Transform to grid 600x600
+
+@info(name='query2')
+from RawInputStream
+select medallion, math:round((pickup_longitude - (-74.916578)) /  (0.005986 / 2)) as pick_lon_grid, math:round((41.47718278 - pickup_latitude) /  (0.004491556 / 2)) as pick_lat_grid, math:round((dropoff_longitude - (-74.916578)) /  (0.005986 / 2)) as drop_lon_grid, math:round((41.47718278 - dropoff_latitude) /  (0.004491556 / 2)) as drop_lat_grid, trip_time_in_secs
+insert into GridInputStream;
+
+-- Filter to events only on 600x600 grid
+
+@info(name='query3')
+from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 600 and pick_lat_grid >= 0 and pick_lat_grid <= 600 and drop_lon_grid >= 0 and drop_lon_grid <= 600 and drop_lat_grid >= 0 and drop_lat_grid <= 600 ]
+select medallion, pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, trip_time_in_secs
+insert into FilteredGridInputStream;
+
+@info(name='query7')
+from every e1=FilteredGridInputStream 
+    -> e2=FilteredGridInputStream[e1.pick_lon_grid == e2.pick_lon_grid and e1.pick_lat_grid == e2.pick_lat_grid and e2.trip_time_in_secs > e1.trip_time_in_secs]
+    -> e3=FilteredGridInputStream[e2.pick_lon_grid == e3.pick_lon_grid and e2.pick_lat_grid == e3.pick_lat_grid and e3.trip_time_in_secs > e2.trip_time_in_secs]
+    -> e4=FilteredGridInputStream[e3.pick_lon_grid == e4.pick_lon_grid and e3.pick_lat_grid == e4.pick_lat_grid and e4.trip_time_in_secs > e3.trip_time_in_secs]
+    within 10 sec
+select e1.pick_lon_grid, e1.pick_lat_grid
+insert into CongestedAreasStream;
+
+

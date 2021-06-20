@@ -1,0 +1,22 @@
+@App:name("Q5")
+
+@App:description('Receive events via Kafka and view the output on the console')
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+@sink(type='log')
+define stream MaxTaxiTipper (medallion string, total_tip double);
+
+from RawInputStream#window.timeBatch(10 sec)
+select medallion, sum(tip_amount) as total_tip
+    group by medallion
+    order by total_tip desc
+    limit 1
+insert into MaxTaxiTipper;

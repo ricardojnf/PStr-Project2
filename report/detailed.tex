@@ -83,4 +83,44 @@ __________
 \end{lstlisting}
 
 Finally, over the last 10 seconds, we used a logical pattern, selecting the areas that had a sequence of four trips, all increasing in duration, accessing the values in \textit{trip$_-$time$_-$in$_-$secs}. In this way we identify areas that have had a peak in travel time and are therefore the most congested areas.\par
-We insert the results into the \textit{CongestedAreasStream}, which is the output stream that prints the results to the console (as it was defined with \textit{\@sink(type='log')}) 
+We insert the results into the \textit{CongestedAreasStream}, which is the output stream that prints the results to the console (as it was defined with \textit{\@sink(type='log')}). \par
+The results demonstrate which areas are congested and the repetition of the same cells gives us information about the degree of congestion as it gives results for combinations of sequences of events. The repetition of grid cells shows that there are many events whose combination match the combination to identify congested areas. Here are the results for question Q4:\par
+
+\begin{lstlisting}
+__________
+wso2sp-editor | [2021-06-18 14:08:49,441]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+[Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}, 
+Event{timestamp=1624025329439, data=[314, 322], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,464]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+[Event{timestamp=1624025329463, data=[312, 312], isExpired=false}, 
+Event{timestamp=1624025329463, data=[312, 312], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,470]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+[Event{timestamp=1624025329469, data=[309, 328], isExpired=false}, 
+Event{timestamp=1624025329469, data=[309, 328], isExpired=false}, 
+Event{timestamp=1624025329469, data=[309, 328], isExpired=false}]
+wso2sp-editor | [2021-06-18 14:08:49,471]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+Event{timestamp=1624025329470, data=[312, 322], isExpired=false}
+wso2sp-editor | [2021-06-18 14:08:49,472]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+Event{timestamp=1624025329471, data=[303, 339], isExpired=false}
+wso2sp-editor | [2021-06-18 14:08:49,477]  
+INFO {org.wso2.siddhi.core.stream.output.sink.LogSink} - 
+Q4 : CongestedAreasStream : 
+Event{timestamp=1624025329476, data=[320, 317], isExpired=false}
+__________
+\end{lstlisting}

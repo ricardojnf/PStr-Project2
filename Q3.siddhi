@@ -1,0 +1,34 @@
+@App:name("Q3")
+@App:description("Description of the plan")
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream FilteredInputStream (medallion string, pickup_datetime long,dropoff_datetime long);
+
+
+define stream idleTimes(medallion string, idleTime long);
+
+@sink(type = 'log', @map(type = 'text', @payload(""" Average idle time greater than threshold: 10min """)))
+define stream idleTimeAlert(avg_idle_time double);
+
+--filters
+
+from RawInputStream
+select medallion, time:timestampInMilliseconds(pickup_datetime, 'yyyy-MM-dd HH:mm:ss') as pickup_datetime, time:timestampInMilliseconds(dropoff_datetime, 'yyyy-MM-dd HH:mm:ss') as dropoff_datetime
+insert into FilteredInputStream;
+
+from every e1 = FilteredInputStream -> e2 = FilteredInputStream[e1.medallion == e2.medallion] within 10 sec
+select e1.medallion as medallion, (e2.pickup_datetime - e1.dropoff_datetime) as idleTime
+insert into idleTimes;
+
+from idleTimes#window.timeBatch(10 sec)
+select avg(idleTime) as avg_idle_time
+    having avg_idle_time > (10.0*60.0*1000.0)
+insert into idleTimeAlert;

@@ -1,0 +1,54 @@
+@App:name("Q1")
+@App:description("Description of the plan")
+
+@source(type='kafka',
+        topic.list='productions',
+        partition.no.list='0',
+        threading.option='single.thread',
+        group.id="group",
+        bootstrap.servers='kafka:9092',
+        @map(type='csv', delimeter=','))
+define stream RawInputStream (medallion string,hack_license string,pickup_datetime string,dropoff_datetime string,trip_time_in_secs long,trip_distance string,pickup_longitude double,pickup_latitude double,dropoff_longitude double,dropoff_latitude double,payment_type string,fare_amount double,surcharge string,mta_tax string,tip_amount double,tolls_amount double,total_amount double);
+
+define stream GridInputStream (pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long);
+
+define stream FilteredGridInputStream (pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long);
+
+@sink(type='log')
+define stream last30MinWithCoords(pick_lon_grid long, pick_lat_grid long, drop_lon_grid long, drop_lat_grid long, ride_count long);
+
+@info(name='query2')
+from RawInputStream
+select math:round((pickup_longitude - (-74.916578)) /  (0.005986)) as pick_lon_grid, math:round((41.47718278 - pickup_latitude) /  (0.004491556)) as pick_lat_grid, math:round((dropoff_longitude - (-74.916578)) /  (0.005986)) as drop_lon_grid, math:round((41.47718278 - dropoff_latitude) /  (0.004491556)) as drop_lat_grid
+insert into GridInputStream;
+
+-- Filter to events only on 600x600 grid
+
+@info(name='query3')
+from GridInputStream [ pick_lon_grid >= 0 and pick_lon_grid <= 300 and pick_lat_grid >= 0 and pick_lat_grid <= 300 and drop_lon_grid >= 0 and drop_lon_grid <= 300 and drop_lat_grid >= 0 and drop_lat_grid <= 300 ]
+select pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid
+insert into FilteredGridInputStream;
+
+--filters
+
+@info(name='last30MinRideCoordinates')
+from FilteredGridInputStream#window.timeBatch(30 sec)
+select pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid, count() as ride_count
+    group by pick_lon_grid, pick_lat_grid, drop_lon_grid, drop_lat_grid
+    order by ride_count desc
+    limit 10
+insert into last30MinWithCoords;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
